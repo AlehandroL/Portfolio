@@ -7,8 +7,12 @@ class stock_object(Protocol):
 
 
 class portfolio_item:
-    def __init__(self, stock_object: stock_object, shares: int = 0):
-        self.stock_object = stock_object
+    """
+    A portfolio_item contains a stock_object and the associated amount of shares owned.
+    It implements the "Price" method, which call the method with the same name in it's stock_object.
+    """
+    def __init__(self, stock: stock_object, shares: int = 0):
+        self.stock = stock
         self.shares = shares
     
     def set_shares(self, shares: int):
@@ -24,11 +28,11 @@ class portfolio_item:
         return self.shares
     
     def Price(self, date: date) -> int:
-        return self.stock_object.Price(date)
+        return self.stock.Price(date)
 
 
 class Portfolio:
-    """A Portfolio object has a collection of stock_objects with the associated amount of shares owned."""
+    """A Portfolio object is a collection of portfolio_items and implements the "profit" method."""
     def __init__(self):
         self.portfolio_items = [] # [[portfolio_item_1], [portfolio_item_2], ... ]
 
@@ -43,7 +47,7 @@ class Portfolio:
         Returns the position of the Stock in the stocks array (-1 if not present).
         """
         for i, portfolio_item in enumerate(self.portfolio_items):
-            if portfolio_item.stock_object == stock:
+            if portfolio_item.stock == stock:
                 return i
         return -1
 
@@ -90,15 +94,34 @@ class Portfolio:
         for p_item in self.portfolio_items:
             portfolio_value += p_item.get_shares()*p_item.Price(date.isoformat())
         return portfolio_value
+    
+    @staticmethod
+    def dates_are_ordered(start_date: date, end_date: date) -> bool:
+        return (start_date < end_date)
 
-    def profit(self, start_date: date, end_date: date, annualized_return=False) -> float:
-        if start_date >= end_date:
-            raise ValueError("'end_date' must be after 'start_date'.")
+    @staticmethod
+    def calculate_period_in_years(start_date: date, end_date: date) -> float:
+        period = (end_date - start_date).days
+        years = period/365.0
+        return years
+
+    def calculate_net_profit(self, start_date: date, end_date: date) -> int:
         start_value = self.portfolio_value(start_date)
         end_value = self.portfolio_value(end_date)
-        if annualized_return:
-            period = (end_date - start_date).days
-            years = period/365.0
-            annualized_return = (end_value/start_value)**(1/years)-1
-            return annualized_return
         return end_value - start_value
+    
+    def calculate_annualized_return(self, start_date: date, end_date: date) -> int:
+        start_value = self.portfolio_value(start_date)
+        end_value = self.portfolio_value(end_date)
+        years = calculate_period_in_years(start_date, end_date)
+        annualized_return = (end_value/start_value)**(1/years)-1
+        return annualized_return
+
+    def profit(self, start_date: date, end_date: date, annualized_return=False) -> float:
+        if not dates_are_ordered(start_date, end_date):
+            raise ValueError("'end_date' must be after 'start_date'.")
+        if annualized_return is True: 
+            annualized_return = self.calculate_annualized_return(start_date, end_date)
+            return annualized_return
+        profit = self.calculate_net_profit(start_date, end_date)
+        return profit

@@ -41,5 +41,4 @@ Repository made for applying to Fintual's developer position.
 	Even though it was not required to include the number of shares, it stroke me as relevant to consider it since in practice every portfolio is conformed by a collection of different numbers of Stock shares. This is key when comparing different portfolios.
 	
 	
-	
-						TBC# preauth-io
+
