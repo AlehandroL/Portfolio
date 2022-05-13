@@ -56,15 +56,10 @@ class Portfolio:
             return False
         return True
 
-    def add_stock(self, stock: stock_object) -> bool:
-        """
-        Returns false if the Stock is already in the Portfolio
-        """
-        if self.has_stock(stock):
-            return False
-        new_portfolio_item = portfolio_item(stock)
-        self.portfolio_items.append(new_portfolio_item)
-        return True
+    def add_stock(self, stock: stock_object):
+        if not self.has_stock(stock):
+            new_portfolio_item = portfolio_item(stock)
+            self.portfolio_items.append(new_portfolio_item)
 
     def get_shares(self, stock: stock_object) -> int:
         index = self.get_stock_index(stock)
@@ -79,9 +74,8 @@ class Portfolio:
             portfolio_item = self.portfolio_items[index]
             portfolio_item.add_shares(shares)
         else:
-            if self.add_stock(stock):
-                return self.add_shares(stock, shares)
-            return False
+            self.add_stock(stock)
+            self.add_shares(stock, shares)
 
     def remove_shares(self, stock: stock_object, shares: int):
         if self.has_stock(stock):
@@ -113,12 +107,12 @@ class Portfolio:
     def calculate_annualized_return(self, start_date: date, end_date: date) -> int:
         start_value = self.portfolio_value(start_date)
         end_value = self.portfolio_value(end_date)
-        years = calculate_period_in_years(start_date, end_date)
+        years = Portfolio.calculate_period_in_years(start_date, end_date)
         annualized_return = (end_value/start_value)**(1/years)-1
         return annualized_return
 
     def profit(self, start_date: date, end_date: date, annualized_return=False) -> float:
-        if not dates_are_ordered(start_date, end_date):
+        if not Portfolio.dates_are_ordered(start_date, end_date):
             raise ValueError("'end_date' must be after 'start_date'.")
         if annualized_return is True: 
             annualized_return = self.calculate_annualized_return(start_date, end_date)

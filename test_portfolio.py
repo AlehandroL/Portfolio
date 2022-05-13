@@ -47,8 +47,8 @@ class TestPortfolio(unittest.TestCase):
         portfolio3.add_shares(googl, 2)
         
         self.assertAlmostEqual(portfolio.profit(date.fromisoformat('2022-01-01'), date.fromisoformat('2022-04-01'), True), 0.42241978)
-        self.assertAlmostEqual(portfolio2.profit(date.fromisoformat('2022-01-01'), date.fromisoformat('2022-02-01'), 1), -0.30786447)
-        self.assertAlmostEqual(portfolio3.profit(date.fromisoformat('2022-01-01'), date.fromisoformat('2022-03-01'), 3), 0.27033981)
+        self.assertAlmostEqual(portfolio2.profit(date.fromisoformat('2022-01-01'), date.fromisoformat('2022-02-01'), True), -0.30786447)
+        self.assertAlmostEqual(portfolio3.profit(date.fromisoformat('2022-01-01'), date.fromisoformat('2022-03-01'), True), 0.27033981)
         
 if __name__ == '__main__':
     unittest.main()
